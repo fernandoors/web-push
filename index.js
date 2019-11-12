@@ -4,8 +4,10 @@ const webpush = require('web-push')
 const bodyParser = require('body-parser')
 const path = require('path')
 const app = express()
+var cors = require('cors');
 
 //Set static path
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'client')))
 
 app.use(bodyParser.json())
@@ -18,12 +20,13 @@ webpush.setVapidDetails('mailto:test@test.com', publicVapidKey, privateVapidKey)
 app.post('/subscribe', (req, res) => {
   // Get pushSubscription object
   const subscription = req.body
+  const { title, text } = req.query
 
   //Send 201 - resource create
   res.status(201).json({})
 
   // Create payload
-  const payload = JSON.stringify({ title: 'Push Test' })
+  const payload = JSON.stringify({ title, body: text })
 
   //Pass object into sendNotification
   webpush.sendNotification(subscription, payload).catch(err => console.error(err))
